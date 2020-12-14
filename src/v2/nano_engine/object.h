@@ -73,6 +73,8 @@ public:
     {
     }
 
+    virtual ~NanoObject(){};
+
     /**
      * Draws nano object Engine canvas
      */
@@ -376,7 +378,7 @@ public:
         else if ( &object == m_first )
         {
             object.refresh();
-            m_first = object.m_next;
+            m_first = static_cast<value_type *>(object.m_next);
             object.m_next = nullptr;
             object.m_tiler = nullptr;
         }
@@ -393,7 +395,7 @@ public:
                     object.m_tiler = nullptr;
                     break;
                 }
-                p = p->m_next;
+                p = static_cast<value_type *>(p->m_next);
             }
         }
     }
