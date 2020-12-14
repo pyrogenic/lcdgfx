@@ -120,13 +120,16 @@ public:
      */
     void down()
     {
+      if (m_selected) {
         m_selected->defocus();
+      }
         m_selected = this->getNext( m_selected );
-        if ( !m_selected )
-        {
-            m_selected = this->getNext();
+        if (!m_selected) {
+          m_selected = this->getNext();
         }
-        m_selected->focus();
+        if (m_selected) {
+          m_selected->focus();
+        }
     }
 
     /**
@@ -136,13 +139,16 @@ public:
      */
     void up()
     {
+      if (m_selected) {
         m_selected->defocus();
-        m_selected = getPrev( m_selected );
-        if ( !m_selected )
-        {
-            m_selected = this->getPrev();
+      }
+      m_selected = this->getPrev(m_selected);
+      if (!m_selected) {
+        m_selected = this->getPrev();
+      }
+        if (m_selected) {
+          m_selected->focus();
         }
-        m_selected->focus();
     }
 
 protected:

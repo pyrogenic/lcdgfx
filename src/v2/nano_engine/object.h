@@ -41,7 +41,7 @@
 /**
  * Template class for NanoEngine objects lists
  */
-template<class T>
+template<class T, class TItem>
 class NanoObjectList;
 
 /**
@@ -51,7 +51,7 @@ template<class T>
 class NanoObject: public NanoEngineObject<T>
 {
 public:
-    template<class N> friend class NanoObjectList;
+    template<class N, class P> friend class NanoObjectList;
     /**
      * Creates basic object with the size [1,1]
      *
@@ -229,21 +229,22 @@ protected:
     NanoRect       m_rect;
 };
 
-template<class T>
+template<class T, class TItem = NanoObject<T>>
 class NanoObjectList: public NanoObject<T>
 {
 public:
     using NanoObject<T>::NanoObject;
 
+    typedef TItem value_type;
     /**
      * Returns next object in the list.
      * If no objects left, the function returns nullptr.
      *
      * @param prev previous object. If nullptr, then first object is returned.
      */
-    NanoObject<T> *getNext(NanoObject<T> *prev = nullptr)
+    value_type *getNext(value_type *prev = nullptr)
     {
-        return static_cast<NanoObject<T>*>(prev ? prev->m_next : m_first);
+        return static_cast<value_type*>(prev ? prev->m_next : m_first);
     }
 
     /**
@@ -252,16 +253,16 @@ public:
      *
      * @param curr current object. If nullptr, then last object is returned.
      */
-    NanoObject<T> *getPrev(NanoObject<T> *curr = nullptr)
+    value_type *getPrev(value_type *curr = nullptr)
     {
-        NanoObject<T> *p = m_first;
+        value_type *p = m_first;
         while (p)
         {
             if (p->m_next == curr)
             {
                 break;
             }
-            p = static_cast<NanoObject<T>*>(p->m_next);
+            p = static_cast<value_type*>(p->m_next);
         }
         return p;
     }
@@ -271,7 +272,7 @@ public:
      */
     void update() override
     {
-        NanoObject<T> *p = getNext();
+        value_type *p = getNext();
         while (p)
         {
             p->update();
@@ -284,7 +285,7 @@ public:
      */
     void refresh() override
     {
-        NanoObject<T> *p = getNext();
+        value_type *p = getNext();
         while (p)
         {
             p->setTiler( this->m_tiler );
@@ -298,7 +299,7 @@ public:
      */
     void draw() override
     {
-        NanoObject<T> *p = getNext();
+        value_type *p = getNext();
         while (p)
         {
             p->draw();
@@ -311,9 +312,9 @@ public:
      *
      * @param object object to search for.
      */
-    bool has(NanoObject<T> &object)
+    bool has(value_type &object)
     {
-        NanoObject<T> *p = getNext();
+        value_type *p = getNext();
         while (p && p != &object)
         {
             p = getNext(p);
@@ -326,7 +327,7 @@ public:
      *
      * @param object object to add.
      */
-    void add(NanoObject<T> &object)
+    void add(value_type &object)
     {
         if ( has( object ) )
         {
@@ -350,7 +351,7 @@ public:
      *
      * @param object object to insert.
      */
-    void insert(NanoObject<T> &object)
+    void insert(value_type &object)
     {
         if ( has( object ) )
         {
@@ -367,7 +368,7 @@ public:
      *
      * @param object object to remove.
      */
-    void remove(NanoObject<T> &object)
+    void remove(value_type &object)
     {
         if ( m_first == nullptr )
         {
@@ -381,7 +382,7 @@ public:
         }
         else
         {
-            NanoObject<T> *p = m_first;
+            value_type *p = m_first;
             while ( p->m_next )
             {
                 if ( p->m_next == &object )
@@ -398,7 +399,7 @@ public:
     }
 
 private:
-    NanoObject<T> *m_first = nullptr;
+    value_type *m_first = nullptr;
 };
 
 /**
