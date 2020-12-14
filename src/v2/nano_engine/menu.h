@@ -49,24 +49,24 @@ public:
  * This is base class for user menu implementations.
  * NanoMenu can work only as part of NanoEngine.
  */
-template<class T>
-class NanoMenu: public NanoObjectList<T>
-{
+template <class T, class TItem = NanoObject<T>> class NanoMenu : public NanoObjectList<T, TItem> {
 public:
+    typedef NanoObjectList<T, TItem> super;
+    typedef typename super::value_type value_type;
     /**
      * Creates menu object.
      *
      * @param pos position of the sprite in global coordinates
      */
     explicit NanoMenu(const NanoPoint &pos )
-         : NanoObjectList<T>( pos )
+         : super( pos )
     {
     }
 
     /**
      * Creates instance of NanoMenu at 0,0 position
      */
-    NanoMenu(): NanoObjectList<T>( {0,0} )
+    NanoMenu(): super( {0,0} )
     {
     }
 
@@ -75,9 +75,9 @@ public:
      *
      * @param item menu item to add
      */
-    void add( NanoObject<T> &item )
+    void add( value_type &item )
     {
-        NanoObjectList<T>::add( item );
+        super::add( item );
         item.update(); // update item to init all params
         updateMenuItemsPosition();
         if ( !m_selected )
@@ -92,9 +92,9 @@ public:
      *
      * @param item menu item to insert
      */
-    void insert( NanoObject<T> &item )
+    void insert( value_type &item )
     {
-        NanoObjectList<T>::insert( item );
+        super::insert( item );
         item.update(); // update item to init all params
         updateMenuItemsPosition();
         if ( !m_selected )
@@ -108,7 +108,7 @@ public:
      * Returns pointer to active menu item.
      * If nothing is selected returns nullptr.
      */
-    NanoObject<T> *getSelected()
+    value_type *getSelected()
     {
         return m_selected;
     }
@@ -159,7 +159,7 @@ protected:
     virtual void updateMenuItemsPosition() = 0;
 
 private:
-    NanoObject<T> *m_selected = nullptr;
+    value_type *m_selected = nullptr;
 };
 
 /**
