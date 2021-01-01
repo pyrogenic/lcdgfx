@@ -75,16 +75,17 @@ public:
      *
      * @param item menu item to add
      */
-    void add( value_type &item )
-    {
-        super::add( item );
-        item.update(); // update item to init all params
-        updateMenuItemsPosition();
-        if ( !m_selected )
-        {
-            m_selected = &item;
-            item.focus();
-        }
+    bool add(value_type *item) {
+      if (!super::add(item)) {
+        return false;
+      }
+      item->update(); // update item to init all params
+      updateMenuItemsPosition();
+      if (!m_selected) {
+        m_selected = item;
+        item->focus();
+      }
+      return true;
     }
 
     /**
@@ -92,9 +93,11 @@ public:
      *
      * @param item menu item to insert
      */
-    void insert( value_type &item )
+    bool insert( value_type *item )
     {
-        super::insert( item );
+        if (!super::insert( item )) {
+            return false;
+        }
         item.update(); // update item to init all params
         updateMenuItemsPosition();
         if ( !m_selected )
@@ -102,6 +105,7 @@ public:
             m_selected = &item;
             item.focus();
         }
+      return true;
     }
 
     /**

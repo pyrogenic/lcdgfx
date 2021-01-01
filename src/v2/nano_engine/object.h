@@ -314,90 +314,89 @@ public:
      *
      * @param object object to search for.
      */
-    bool has(value_type &object)
-    {
-        value_type *p = getNext();
-        while (p && p != &object)
-        {
-            p = getNext(p);
-        }
-        return p != nullptr;
+    bool has(value_type *object) {
+      value_type *p = getNext();
+      while (p && p != object) {
+        p = getNext(p);
+      }
+      return p != nullptr;
     }
 
     /**
      * Adds new NanoObject to the end of the list and marks it for refresh.
      *
      * @param object object to add.
+     * @return true if object exists and was newly-added
      */
-    void add(value_type &object)
-    {
-        if ( has( object ) )
-        {
-            return;
-        }
-        object.m_next = nullptr;
-        object.setTiler( this->m_tiler );
-        if ( !m_first )
-        {
-            m_first = &object;
-        }
-        else
-        {
-            getPrev()->m_next = &object;
-        }
-        object.refresh();
+    bool add(value_type *object) {
+      if (object == nullptr || has(object)) {
+        return false;
+      }
+      object->m_next = nullptr;
+      object->setTiler(this->m_tiler);
+      if (!m_first) {
+        m_first = object;
+      } else {
+        getPrev()->m_next = object;
+      }
+      object->refresh();
+      return true;
     }
 
     /**
      * Adds new NanoObject to the beginning of the list and marks it for refresh.
      *
      * @param object object to insert.
+     * @return true if object exists and was newly-added
      */
-    void insert(value_type &object)
-    {
-        if ( has( object ) )
-        {
-            return;
-        }
-        object.m_next = m_first;
-        object.m_tiler = this->m_tiler;
-        m_first = &object;
-        object.refresh();
+    bool insert(value_type *object) {
+      if (object == nullptr || has(object)) {
+        return false;
+      }
+      object->m_next = m_first;
+      object->m_tiler = this->m_tiler;
+      m_first = object;
+      object->refresh();
+      return true;
     }
 
     /**
      * Removes NanoObject from the list and marks occupied area for refresh.
      *
      * @param object object to remove.
+     * @return true if object was in the list
      */
-    void remove(value_type &object)
+    bool remove(value_type *object)
     {
-        if ( m_first == nullptr )
+        if ( m_first == nullptr || object == nullptr )
         {
+            return false;
         }
-        else if ( &object == m_first )
+        else if ( object == m_first )
         {
-            object.refresh();
-            m_first = static_cast<value_type *>(object.m_next);
-            object.m_next = nullptr;
-            object.m_tiler = nullptr;
+            object->refresh();
+            m_first = static_cast<value_type *>(object->m_next);
+            object->m_next = nullptr;
+            object->m_tiler = nullptr;
+            return true;
         }
         else
         {
             value_type *p = m_first;
             while ( p->m_next )
             {
-                if ( p->m_next == &object )
+                if ( p->m_next == object )
                 {
-                    object.refresh();
-                    p->m_next = object.m_next;
-                    object.m_next = nullptr;
-                    object.m_tiler = nullptr;
-                    break;
+                    object->refresh();
+                    p->m_next = object->m_next;
+                    object->m_next = nullptr;
+                    object->m_tiler = nullptr;
+                    return true;
                 }
                 p = static_cast<value_type *>(p->m_next);
             }
         }
+        return false;
     }
 
 private:
